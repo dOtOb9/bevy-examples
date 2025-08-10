@@ -24,7 +24,7 @@ fn setup_physics(mut commands: Commands) {
         RigidBody::Dynamic,
         Collider::ball(30.),
         GravityScale(0.0), 
-        ColliderMassProperties::Density(10000.),
+        ColliderMassProperties::Density(100.),
         Transform::from_xyz(100.0, 100.0, 0.0),
     ));
 }
@@ -40,16 +40,16 @@ fn apply_force(
     let width = window.width();
     let height = window.height();
 
-    const G: f32 = 100000000000.;
+    const G: f32 = 100000000.;
 
 
     for (entity, transform) in query.iter() {
-        let direction = Vec2::new(cursor_position.x - width / 2.0, -1. * cursor_position.y + height / 2.0) - transform.translation.truncate();
-        println!("Direction: {:?}", direction);
+        let direction = Vec2::new(cursor_position.x - width/2., height/2.-cursor_position.y) - transform.translation.truncate();
 
-        let impulse = 500000000.0_f32.min(G / direction.length_squared()) * direction.normalize();
+        println!("cursor_position: {:?}", Vec2::new(cursor_position.x - width/2., height/2.-cursor_position.y));
+        println!("body_position: {:?}", transform.translation.truncate());
 
-        println!("Impulse: {:?}", impulse);
+        let impulse = (G / direction.length_squared()).min(5000000.) * direction.normalize();
 
         commands.entity(entity).remove::<ExternalImpulse>();
         commands.entity(entity).insert(ExternalImpulse {
